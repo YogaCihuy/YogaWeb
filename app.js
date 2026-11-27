@@ -54,6 +54,9 @@
 
   const ADMIN_UID = String(window.ADMIN_UID || "").trim();
   const UID_CONFIGURED = ADMIN_UID.length > 0 && !/PASTE/i.test(ADMIN_UID);
+  const ADMIN_EMAIL = String(
+    window.ADMIN_EMAIL || "admin@yogaweb.local"
+  ).trim();
 
   const state = {
     mode: "demo",
@@ -515,7 +518,7 @@
       case "auth/user-not-found":
       case "auth/wrong-password":
       case "auth/invalid-credential":
-        return "Email atau password salah.";
+        return "Password salah.";
       case "auth/too-many-requests":
         return "Kebanyakan percobaan login. Coba lagi nanti.";
       case "auth/network-request-failed":
@@ -609,11 +612,10 @@
       return;
     }
 
-    $("auth-email").value = "";
     $("auth-password").value = "";
     setAuthError("");
     $("auth-modal").classList.add("open");
-    window.setTimeout(() => $("auth-email").focus(), 60);
+    window.setTimeout(() => $("auth-password").focus(), 60);
   }
 
   function closeAuthModal() {
@@ -626,11 +628,10 @@
       return;
     }
 
-    const email = $("auth-email").value.trim();
     const password = $("auth-password").value;
 
-    if (!email || !password) {
-      setAuthError("Email & password wajib diisi.");
+    if (!password) {
+      setAuthError("Password wajib diisi.");
       return;
     }
 
@@ -640,7 +641,7 @@
 
     try {
       await auth.setPersistence(window.firebase.auth.Auth.Persistence.SESSION);
-      const cred = await auth.signInWithEmailAndPassword(email, password);
+      const cred = await auth.signInWithEmailAndPassword(ADMIN_EMAIL, password);
       $("auth-password").value = "";
 
       if (UID_CONFIGURED && cred.user.uid !== ADMIN_UID) {
@@ -889,8 +890,7 @@
     if (
       event.key === "Enter" &&
       $("auth-modal").classList.contains("open") &&
-      (document.activeElement === $("auth-email") ||
-        document.activeElement === $("auth-password"))
+      document.activeElement === $("auth-password")
     ) {
       loginAdmin();
     }

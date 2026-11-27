@@ -1057,6 +1057,10 @@ body {
   letter-spacing: 0.08em;
 }
 
+#login-btn {
+  margin-top: 14px;
+}
+
 .auth-note {
   margin: 12px 0 0;
   font-size: 10.5px;
