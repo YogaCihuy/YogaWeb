@@ -31,4 +31,4 @@ window.FIREBASE_CONFIG = {
 window.ADMIN_EMAIL = "admin@yogaweb.local";
 
 // UID admin (bukan email, bukan password — aman diketahui publik).
-window.ADMIN_UID = "PASTE_ADMIN_UID";
+window.ADMIN_UID = "WhuwiT82Mgf1Aadj9Tu9s2a29sJ3";
