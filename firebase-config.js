@@ -1,23 +1,31 @@
 // ==========================================================
 // KONFIGURASI FIREBASE
 // ==========================================================
-// 1. Buka Firebase Console -> Project settings -> General -> Your apps
-// 2. Pilih Web app (</>) -> copy object firebaseConfig
-// 3. Tempel di bawah, ganti semua nilai "PASTE_..."
+// API key Firebase memang publik (aman ditaruh di client).
+// Keamanan data diatur lewat Firebase Auth + firestore.rules.
 //
-// Selama masih ada "PASTE_...", web otomatis jalan di Mode Demo
-// (data disimpan di localStorage browser).
+// SETUP KEAMANAN (sekali doang):
+// 1. Firebase Console -> Authentication -> Sign-in method
+//    -> aktifkan "Email/Password"
+// 2. Tab Users -> Add user -> bikin email + password admin
+// 3. Copy "User UID" akun itu, tempel di ADMIN_UID bawah
+//    (dan di firestore.rules, ganti 'PASTE_ADMIN_UID')
+// 4. Publish rules: Firebase Console -> Firestore -> Rules
+//    (atau: firebase deploy --only firestore:rules)
+// 5. Reload web -> tombol "Lu Yoga Bukan?" -> login pakai akun itu
 //
-// Firestore yang dipakai:
-//   - site/profile   -> { name, role, about, updatedAt }
-//   - friends/{id}   -> { name, roblox, desc, createdAt, updatedAt }
+// Selama ADMIN_UID masih "PASTE_ADMIN_UID", panel admin kebuka
+// tapi tombol simpan/hapus dikunci (data tetap aman dari tulis).
 // ==========================================================
 
 window.FIREBASE_CONFIG = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  storageBucket: "PASTE_PROJECT.firebasestorage.app",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyAR9FwMoywMU5W7KabwCxyr7pCdWBQ4Lck",
+  authDomain: "yogaweb-112b6.firebaseapp.com",
+  projectId: "yogaweb-112b6",
+  storageBucket: "yogaweb-112b6.firebasestorage.app",
+  messagingSenderId: "1096187591426",
+  appId: "1:1096187591426:web:05bd1df5a206d5fce4e01b"
 };
+
+// UID admin (bukan email, bukan password — aman diketahui publik).
+window.ADMIN_UID = "PASTE_ADMIN_UID";

@@ -1,23 +1,67 @@
 (function () {
   "use strict";
 
-  const ADMIN_PASS = "191013";
   const DEFAULT_PROFILE = {
     name: "Yoga",
     role: "Developer & Gamer",
     about:
-      "Halo! Gw Yoga. Gw suka ngoding (Web & Game Dev Roblox), main game, dan nonton anime."
+      "Halo! Gw Yoga. Gw suka ngoding (Web & Game Dev Roblox), main game, dan nonton anime.",
+    birthday: "",
+    hobby: "",
+    favoriteSong: "",
+    favoriteMovie: "",
+    favoriteSeries: "",
+    favoriteFood: "",
+    wishlist: ""
   };
   const LS_KEYS = { profile: "yoga_profile_v2", friends: "yoga_friends_v2" };
   const PROFILE_DOC = { collection: "site", id: "profile" };
   const FRIENDS_COLLECTION = "friends";
   const DEMO_DELAY = 650;
+  const LIMITS = {
+    name: 60,
+    role: 80,
+    about: 600,
+    desc: 300,
+    birthday: 40,
+    hobby: 80,
+    favoriteSong: 80,
+    favoriteMovie: 80,
+    favoriteSeries: 80,
+    favoriteFood: 80,
+    wishlist: 300
+  };
+
+  const BIO_FIELDS = [
+    { key: "birthday", label: "Ulang Tahun", icon: "cake" },
+    { key: "hobby", label: "Hobby", icon: "sparkles" },
+    { key: "favoriteSong", label: "Lagu Favorit", icon: "music" },
+    { key: "favoriteMovie", label: "Film Favorit", icon: "film" },
+    { key: "favoriteSeries", label: "Series Favorit", icon: "tv" },
+    { key: "favoriteFood", label: "Makanan Favorit", icon: "utensils" },
+    { key: "wishlist", label: "Wishlist", icon: "star", wide: true }
+  ];
+
+  const BIO_INPUT_IDS = {
+    birthday: "edit-birthday",
+    hobby: "edit-hobby",
+    favoriteSong: "edit-fav-song",
+    favoriteMovie: "edit-fav-movie",
+    favoriteSeries: "edit-fav-series",
+    favoriteFood: "edit-fav-food",
+    wishlist: "edit-wishlist"
+  };
+
+  const ADMIN_UID = String(window.ADMIN_UID || "").trim();
+  const UID_CONFIGURED = ADMIN_UID.length > 0 && !/PASTE/i.test(ADMIN_UID);
 
   const state = {
     mode: "demo",
     profile: { ...DEFAULT_PROFILE },
     friends: [],
-    editingId: null
+    editingId: null,
+    adminUser: null,
+    adminReady: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -74,7 +118,7 @@
   }
 
   /* --------------------------------------------------------
-     Stores: demo (localStorage) / Firestore
+     Stores: demo (read-only fallback) / Firestore
      -------------------------------------------------------- */
 
   function createDemoStore() {
@@ -106,36 +150,11 @@
       },
       watchFriends(cb) {
         subs.friends.add(cb);
-      },
-      async saveProfile(next) {
-        profile = { ...profile, ...next };
-        window.localStorage.setItem(LS_KEYS.profile, JSON.stringify(profile));
-        emit("profile");
-      },
-      async saveFriend(data, id) {
-        if (id) {
-          friends = friends.map((item) =>
-            item.id === id ? { ...item, ...data } : item
-          );
-        } else {
-          friends = friends.concat([
-            { id: String(Date.now()), ...data, createdAt: Date.now() }
-          ]);
-        }
-        window.localStorage.setItem(LS_KEYS.friends, JSON.stringify(friends));
-        emit("friends");
-      },
-      async deleteFriend(id) {
-        friends = friends.filter((item) => item.id !== id);
-        window.localStorage.setItem(LS_KEYS.friends, JSON.stringify(friends));
-        emit("friends");
       }
     };
   }
 
-  function createFirestoreStore(config) {
-    window.firebase.initializeApp(config);
-    const db = window.firebase.firestore();
+  function createFirestoreStore(db) {
     const profileRef = db.collection(PROFILE_DOC.collection).doc(PROFILE_DOC.id);
     const friendsCollection = db.collection(FRIENDS_COLLECTION);
 
@@ -172,7 +191,6 @@
       async saveFriend(data, id) {
         const payload = {
           name: data.name,
-          roblox: data.roblox || "",
           desc: data.desc || "",
           updatedAt: Date.now()
         };
@@ -202,11 +220,19 @@
 
   const firebaseConfig = readFirebaseConfig();
   let store;
+  let auth = null;
   let initFailed = false;
 
   if (firebaseConfig && window.firebase && window.firebase.firestore) {
     try {
-      store = createFirestoreStore(firebaseConfig);
+      window.firebase.initializeApp(firebaseConfig);
+      store = createFirestoreStore(window.firebase.firestore());
+      if (window.firebase.auth) {
+        auth = window.firebase.auth();
+        auth
+          .setPersistence(window.firebase.auth.Auth.Persistence.SESSION)
+          .catch((err) => console.error("[auth] persistence:", err));
+      }
     } catch (err) {
       console.error("[firebase] init gagal:", err);
       initFailed = true;
@@ -224,13 +250,10 @@
     let text;
     if (initFailed) {
       text =
-        "Firebase gagal diinisialisasi — sementara Mode Demo (data disimpan di browser).";
-    } else if (firebaseConfig) {
-      text =
-        "SDK Firebase nggak kebaca — sementara Mode Demo (data disimpan di browser).";
+        "Firebase gagal diinisialisasi — web jalan read-only. Cek config & koneksi.";
     } else {
       text =
-        "Mode Demo — data disimpan di browser. Tempel config Firebase di firebase-config.js buat nyambung ke Firestore.";
+        "Firebase belum aktif — web jalan read-only (informasi tetap bisa dilihat).";
     }
 
     banner.textContent = text;
@@ -242,11 +265,15 @@
      -------------------------------------------------------- */
 
   function renderProfile(raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
     const profile = {
-      name: raw && raw.name ? String(raw.name) : DEFAULT_PROFILE.name,
-      role: raw && raw.role ? String(raw.role) : DEFAULT_PROFILE.role,
-      about: raw && raw.about ? String(raw.about) : ""
+      name: source.name ? String(source.name) : DEFAULT_PROFILE.name,
+      role: source.role ? String(source.role) : DEFAULT_PROFILE.role,
+      about: source.about ? String(source.about) : ""
     };
+    BIO_FIELDS.forEach((field) => {
+      profile[field.key] = source[field.key] ? String(source[field.key]) : "";
+    });
     state.profile = profile;
 
     $("display-name").textContent = profile.name;
@@ -258,6 +285,60 @@
 
     $("avatar-initials").textContent = initials(profile.name);
     document.title = profile.name + " — Manga Site";
+
+    renderBio(profile);
+  }
+
+  /* --------------------------------------------------------
+     Render: biodata
+     -------------------------------------------------------- */
+
+  function renderBioSkeletons() {
+    const grid = $("bio-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    BIO_FIELDS.forEach((field) => {
+      const card = document.createElement("article");
+      card.className = "bio-card skeleton-card" + (field.wide ? " bio-wide" : "");
+      card.innerHTML =
+        '<span class="skeleton sk-sm sk-38"></span>' +
+        '<span class="skeleton sk-line sk-70"></span>';
+      grid.appendChild(card);
+    });
+  }
+
+  function renderBio(profile) {
+    const grid = $("bio-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const frag = document.createDocumentFragment();
+    BIO_FIELDS.forEach((field) => {
+      const value = String(profile[field.key] || "").trim();
+
+      const card = document.createElement("article");
+      card.className =
+        "bio-card" + (field.wide ? " bio-wide" : "") + (value ? "" : " is-empty");
+
+      const label = document.createElement("span");
+      label.className = "bio-label";
+      const icon = document.createElement("i");
+      icon.setAttribute("data-lucide", field.icon);
+      label.appendChild(icon);
+      label.appendChild(document.createTextNode(field.label));
+
+      const text = document.createElement("p");
+      text.className = "bio-value";
+      text.textContent = value || "Belum diisi";
+
+      card.appendChild(label);
+      card.appendChild(text);
+      frag.appendChild(card);
+    });
+
+    grid.appendChild(frag);
+    if (window.lucide) window.lucide.createIcons();
   }
 
   /* --------------------------------------------------------
@@ -274,9 +355,9 @@
       card.innerHTML =
         '<div class="friend-head">' +
         '<span class="skeleton sk-avatar"></span>' +
-        '<div class="friend-meta" style="flex:1">' +
-        '<span class="skeleton sk-line" style="width:55%"></span>' +
-        '<span class="skeleton sk-line sk-sm" style="width:38%"></span>' +
+        '<div class="friend-meta sk-meta">' +
+        '<span class="skeleton sk-line sk-55"></span>' +
+        '<span class="skeleton sk-line sk-sm sk-38"></span>' +
         "</div>" +
         "</div>" +
         '<span class="skeleton sk-quote"></span>';
@@ -304,16 +385,8 @@
     name.textContent = friend.name || "Tanpa Nama";
 
     const tag = document.createElement("span");
-    if (friend.roblox) {
-      tag.className = "friend-tag";
-      const icon = document.createElement("i");
-      icon.setAttribute("data-lucide", "gamepad-2");
-      tag.appendChild(icon);
-      tag.appendChild(document.createTextNode(" @" + friend.roblox));
-    } else {
-      tag.className = "friend-tag is-empty";
-      tag.textContent = "Friend";
-    }
+    tag.className = "friend-tag is-empty";
+    tag.textContent = "Friend";
 
     meta.appendChild(name);
     meta.appendChild(tag);
@@ -337,13 +410,10 @@
       '<p class="empty-kicker">Panel Kosong</p>' +
       '<h3 class="empty-title">Belum Ada Teman</h3>' +
       '<p class="empty-sub">List pertemanan lu masih kosong. Tambahin temen lewat panel admin.</p>' +
-      '<button type="button" class="btn btn-ink" data-action="open-admin">' +
+      '<button type="button" class="btn btn-ink" data-action="open-auth">' +
       '<i data-lucide="user-plus"></i><span>Buka Panel Admin</span>' +
       "</button>";
 
-    wrap
-      .querySelector('[data-action="open-admin"]')
-      .addEventListener("click", openAuthModal);
     return wrap;
   }
 
@@ -396,13 +466,6 @@
       name.textContent = friend.name || "Tanpa Nama";
       info.appendChild(name);
 
-      if (friend.roblox) {
-        const user = document.createElement("span");
-        user.className = "admin-row-user";
-        user.textContent = "@" + friend.roblox;
-        info.appendChild(user);
-      }
-
       const actions = document.createElement("div");
       actions.className = "admin-row-actions";
 
@@ -428,33 +491,198 @@
   }
 
   /* --------------------------------------------------------
-     Auth gate
+     Auth (Firebase email/password, allowlist UID)
      -------------------------------------------------------- */
 
+  function setAuthError(message) {
+    const el = $("auth-error");
+    if (!message) {
+      el.textContent = "";
+      el.classList.add("hidden");
+      return;
+    }
+    el.textContent = message;
+    el.classList.remove("hidden");
+  }
+
+  function authErrorMessage(err) {
+    const code = err && err.code ? err.code : "";
+    switch (code) {
+      case "auth/invalid-email":
+        return "Format email nggak valid.";
+      case "auth/user-disabled":
+        return "Akun ini dinonaktifkan.";
+      case "auth/user-not-found":
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        return "Email atau password salah.";
+      case "auth/too-many-requests":
+        return "Kebanyakan percobaan login. Coba lagi nanti.";
+      case "auth/network-request-failed":
+        return "Koneksi bermasalah. Cek internet lu.";
+      case "auth/operation-not-allowed":
+      case "auth/configuration-not-found":
+        return "Email/Password belum diaktifkan di Firebase Console (Authentication → Sign-in method).";
+      case "auth/unauthorized-domain":
+        return "Domain ini belum diizinkan di Firebase Auth.";
+      case "auth/invalid-api-key":
+        return "Config Firebase nggak valid. Cek firebase-config.js.";
+      default:
+        return err && err.message ? err.message : "Login gagal.";
+    }
+  }
+
+  function canWriteAdmin() {
+    return (
+      store.mode === "firestore" &&
+      Boolean(state.adminUser) &&
+      state.adminReady
+    );
+  }
+
+  function ensureAdminWrite() {
+    if (canWriteAdmin()) return true;
+    notify("Akses admin belum aktif. Login & selesaikan setup UID dulu.", true);
+    return false;
+  }
+
+  function setAdminControlsEnabled(enabled) {
+    const profileBtn = $("save-profile-btn");
+    const friendBtn = $("save-friend-btn");
+    if (profileBtn) profileBtn.disabled = !enabled;
+    if (friendBtn) friendBtn.disabled = !enabled;
+  }
+
+  function renderAdminSession(user) {
+    $("admin-session-email").textContent = user.email || "(tanpa email)";
+    $("admin-session-uid").textContent = user.uid;
+    $("admin-session").classList.remove("hidden");
+  }
+
+  function renderSetupWarning() {
+    const warn = $("admin-setup-warning");
+    if (!state.adminUser || state.adminReady) {
+      warn.classList.add("hidden");
+      return;
+    }
+    warn.classList.remove("hidden");
+    $("admin-setup-text").textContent =
+      "UID lu: " +
+      state.adminUser.uid +
+      " — tempel ke window.ADMIN_UID di firebase-config.js DAN ke ADMIN_UID di firestore.rules, lalu publish rules & reload. Selama belum, tombol simpan/hapus dikunci.";
+  }
+
+  function handleAuthState(user) {
+    state.adminUser = user || null;
+
+    if (!user) {
+      state.adminReady = false;
+      setAdminControlsEnabled(false);
+      $("admin-session").classList.add("hidden");
+      $("admin-setup-warning").classList.add("hidden");
+      closeAdminModal();
+      return;
+    }
+
+    if (UID_CONFIGURED && user.uid !== ADMIN_UID) {
+      state.adminReady = false;
+      auth.signOut();
+      setAuthError("Akun ini bukan admin website.");
+      openAuthModal();
+      return;
+    }
+
+    state.adminReady = UID_CONFIGURED;
+    renderAdminSession(user);
+    setAdminControlsEnabled(state.adminReady);
+    renderSetupWarning();
+  }
+
   function openAuthModal() {
+    if (store.mode !== "firestore" || !auth) {
+      notify("Admin cuma aktif kalau Firebase tersambung.", true);
+      return;
+    }
+
+    if (state.adminUser) {
+      openAdminModal();
+      return;
+    }
+
+    $("auth-email").value = "";
     $("auth-password").value = "";
-    $("auth-error").classList.add("hidden");
+    setAuthError("");
     $("auth-modal").classList.add("open");
-    window.setTimeout(() => $("auth-password").focus(), 60);
+    window.setTimeout(() => $("auth-email").focus(), 60);
   }
 
   function closeAuthModal() {
     $("auth-modal").classList.remove("open");
   }
 
-  function checkPassword() {
-    const value = $("auth-password").value.replace(/\s+/g, "");
-    if (value === ADMIN_PASS) {
-      closeAuthModal();
-      openAdminModal();
+  async function loginAdmin() {
+    if (store.mode !== "firestore" || !auth) {
+      notify("Admin cuma aktif kalau Firebase tersambung.", true);
       return;
     }
 
-    $("auth-error").classList.remove("hidden");
-    const card = $("auth-modal").querySelector(".modal-card");
-    card.classList.remove("shake");
-    void card.offsetWidth;
-    card.classList.add("shake");
+    const email = $("auth-email").value.trim();
+    const password = $("auth-password").value;
+
+    if (!email || !password) {
+      setAuthError("Email & password wajib diisi.");
+      return;
+    }
+
+    setAuthError("");
+    const btn = $("login-btn");
+    setBusy(btn, true, "Login...");
+
+    try {
+      await auth.setPersistence(window.firebase.auth.Auth.Persistence.SESSION);
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      $("auth-password").value = "";
+
+      if (UID_CONFIGURED && cred.user.uid !== ADMIN_UID) {
+        await auth.signOut();
+        setAuthError("Akun ini bukan admin website.");
+        return;
+      }
+
+      state.adminUser = cred.user;
+      state.adminReady = UID_CONFIGURED;
+      closeAuthModal();
+      openAdminModal();
+      notify("Login admin berhasil.");
+    } catch (err) {
+      console.error("[auth]", err);
+      setAuthError(authErrorMessage(err));
+    } finally {
+      setBusy(btn, false);
+    }
+  }
+
+  async function logoutAdmin() {
+    if (!auth) return;
+    try {
+      await auth.signOut();
+      closeAdminModal();
+      notify("Logout berhasil.");
+    } catch (err) {
+      console.error("[auth] logout:", err);
+      notify("Gagal logout: " + err.message, true);
+    }
+  }
+
+  async function copyAdminUid() {
+    if (!state.adminUser) return;
+    const uid = state.adminUser.uid;
+    try {
+      await navigator.clipboard.writeText(uid);
+      notify("UID admin disalin.");
+    } catch (err) {
+      notify("UID: " + uid + " (copy manual ya)");
+    }
   }
 
   /* --------------------------------------------------------
@@ -462,11 +690,24 @@
      -------------------------------------------------------- */
 
   function openAdminModal() {
+    if (!state.adminUser) {
+      openAuthModal();
+      return;
+    }
+
     $("edit-name").value = state.profile.name || "";
     $("edit-role").value = state.profile.role || "";
     $("edit-about").value = state.profile.about || "";
 
+    BIO_FIELDS.forEach((field) => {
+      const input = $(BIO_INPUT_IDS[field.key]);
+      if (input) input.value = state.profile[field.key] || "";
+    });
+
     resetFriendForm();
+    renderAdminSession(state.adminUser);
+    renderSetupWarning();
+    setAdminControlsEnabled(state.adminReady);
     $("admin-modal").classList.add("open");
   }
 
@@ -474,10 +715,16 @@
     $("admin-modal").classList.remove("open");
   }
 
+  function limitText(value, max) {
+    return String(value || "").trim().slice(0, max);
+  }
+
   async function saveProfile() {
-    const name = $("edit-name").value.trim();
-    const role = $("edit-role").value.trim();
-    const about = $("edit-about").value.trim();
+    if (!ensureAdminWrite()) return;
+
+    const name = limitText($("edit-name").value, LIMITS.name);
+    const role = limitText($("edit-role").value, LIMITS.role);
+    const about = limitText($("edit-about").value, LIMITS.about);
 
     if (!name) {
       notify("Nama wajib diisi!", true);
@@ -485,11 +732,25 @@
       return;
     }
 
+    const bio = {};
+    BIO_FIELDS.forEach((field) => {
+      const input = $(BIO_INPUT_IDS[field.key]);
+      bio[field.key] = limitText(
+        input ? input.value : "",
+        LIMITS[field.key] || 80
+      );
+    });
+
     const btn = $("save-profile-btn");
     setBusy(btn, true, "Menyimpan...");
 
     try {
-      await store.saveProfile({ name, role: role || "Developer", about });
+      await store.saveProfile({
+        name,
+        role: role || "Developer",
+        about,
+        ...bio
+      });
       notify("Profile berhasil disimpan!");
     } catch (err) {
       console.error(err);
@@ -523,19 +784,19 @@
     state.editingId = null;
     $("friend-id").value = "";
     $("friend-name").value = "";
-    $("friend-roblox").value = "";
     $("friend-desc").value = "";
     setFriendFormMode(false);
   }
 
   function startEditFriend(id) {
+    if (!ensureAdminWrite()) return;
+
     const friend = state.friends.find((item) => item.id === id);
     if (!friend) return;
 
     state.editingId = id;
     $("friend-id").value = id;
     $("friend-name").value = friend.name || "";
-    $("friend-roblox").value = friend.roblox || "";
     $("friend-desc").value = friend.desc || "";
 
     setFriendFormMode(true);
@@ -544,10 +805,11 @@
   }
 
   async function saveFriend() {
+    if (!ensureAdminWrite()) return;
+
     const id = $("friend-id").value || null;
-    const name = $("friend-name").value.trim();
-    const roblox = $("friend-roblox").value.trim().replace(/^@+/, "");
-    const desc = $("friend-desc").value.trim();
+    const name = limitText($("friend-name").value, LIMITS.name);
+    const desc = limitText($("friend-desc").value, LIMITS.desc);
 
     if (!name) {
       notify("Nama teman wajib diisi!", true);
@@ -559,7 +821,7 @@
     setBusy(btn, true, "Menyimpan...");
 
     try {
-      await store.saveFriend({ name, roblox, desc }, id);
+      await store.saveFriend({ name, desc }, id);
       notify(id ? "Data teman diperbarui!" : "Teman baru ditambahkan!");
       resetFriendForm();
     } catch (err) {
@@ -571,6 +833,8 @@
   }
 
   async function deleteFriend(id) {
+    if (!ensureAdminWrite()) return;
+
     const friend = state.friends.find((item) => item.id === id);
     const label = friend && friend.name ? '"' + friend.name + '"' : "teman ini";
 
@@ -587,20 +851,29 @@
   }
 
   /* --------------------------------------------------------
-     Global hooks (dipanggil dari inline onclick di HTML)
+     UI wiring (no inline JS, CSP-friendly)
      -------------------------------------------------------- */
 
-  window.openAuthModal = openAuthModal;
-  window.closeAuthModal = closeAuthModal;
-  window.checkPassword = checkPassword;
-  window.closeAdminModal = closeAdminModal;
-  window.saveProfile = saveProfile;
-  window.saveFriend = saveFriend;
-  window.resetFriendForm = resetFriendForm;
+  const ACTIONS = {
+    "open-auth": openAuthModal,
+    "close-auth": closeAuthModal,
+    "login-admin": loginAdmin,
+    "close-admin": closeAdminModal,
+    "save-profile": saveProfile,
+    "save-friend": saveFriend,
+    "reset-friend": resetFriendForm,
+    "logout-admin": logoutAdmin,
+    "copy-uid": copyAdminUid
+  };
 
-  /* --------------------------------------------------------
-     Wiring
-     -------------------------------------------------------- */
+  document.addEventListener("click", (event) => {
+    const target = event.target.closest ? event.target.closest("[data-action]") : null;
+    if (!target) return;
+    const handler = ACTIONS[target.dataset.action];
+    if (!handler) return;
+    event.preventDefault();
+    handler();
+  });
 
   document.querySelectorAll(".modal").forEach((modal) => {
     modal.addEventListener("click", (event) => {
@@ -615,9 +888,11 @@
     }
     if (
       event.key === "Enter" &&
-      document.activeElement === $("auth-password")
+      $("auth-modal").classList.contains("open") &&
+      (document.activeElement === $("auth-email") ||
+        document.activeElement === $("auth-password"))
     ) {
-      checkPassword();
+      loginAdmin();
     }
   });
 
@@ -626,9 +901,16 @@
      -------------------------------------------------------- */
 
   showModeBanner();
+  renderBioSkeletons();
   renderFriendSkeletons(4);
   store.watchProfile(renderProfile);
   store.watchFriends(renderFriends);
+
+  if (auth) {
+    auth.onAuthStateChanged(handleAuthState);
+  } else {
+    setAdminControlsEnabled(false);
+  }
 
   if (window.lucide) window.lucide.createIcons();
 })();

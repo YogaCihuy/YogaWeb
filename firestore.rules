@@ -1,23 +1,93 @@
 rules_version = '2';
 
-// Rules ini buat personal site: semua orang bisa baca,
-// semua orang bisa tulis (karena gate admin masih password di sisi client).
+// ==========================================================
+// KEAMANAN FIRESTORE — YOGA WEB
+// ==========================================================
+// Baca: publik (website-nya memang publik).
+// Tulis: CUMA UID admin yang login lewat Firebase Auth.
 //
-// Kalau nanti mau lebih aman: tambahin Firebase Auth (email/password atau
-// anonymous + custom claim), terus ganti "if true" jadi "if request.auth != null".
+// WAJIB: ganti 'PASTE_ADMIN_UID' di bawah dengan User UID admin.
+// UID bisa dilihat di panel admin website (tombol Copy UID),
+// atau Firebase Console -> Authentication -> Users.
+//
+// Deploy:
+//   Firebase Console -> Firestore Database -> Rules -> paste -> Publish
+//   atau: firebase deploy --only firestore:rules
+// ==========================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Info profile (nama, role, about)
-    match /site/{docId} {
-      allow read: if true;
-      allow write: if true;
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == 'PASTE_ADMIN_UID';
     }
 
-    // List teman
+    // Field profile: name, role, about, biodata, updatedAt — tidak boleh ada field lain.
+    function validProfile() {
+      return request.resource.data.keys().hasOnly([
+          'name', 'role', 'about',
+          'birthday', 'hobby', 'favoriteSong', 'favoriteMovie',
+          'favoriteSeries', 'favoriteFood', 'wishlist',
+          'updatedAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.role is string
+        && request.resource.data.role.size() <= 80
+        && request.resource.data.about is string
+        && request.resource.data.about.size() <= 600
+        && request.resource.data.birthday is string
+        && request.resource.data.birthday.size() <= 40
+        && request.resource.data.hobby is string
+        && request.resource.data.hobby.size() <= 80
+        && request.resource.data.favoriteSong is string
+        && request.resource.data.favoriteSong.size() <= 80
+        && request.resource.data.favoriteMovie is string
+        && request.resource.data.favoriteMovie.size() <= 80
+        && request.resource.data.favoriteSeries is string
+        && request.resource.data.favoriteSeries.size() <= 80
+        && request.resource.data.favoriteFood is string
+        && request.resource.data.favoriteFood.size() <= 80
+        && request.resource.data.wishlist is string
+        && request.resource.data.wishlist.size() <= 300
+        && request.resource.data.updatedAt is number;
+    }
+
+    // Field teman: name, desc, createdAt, updatedAt.
+    function validFriend() {
+      return request.resource.data.keys().hasOnly(['name', 'desc', 'createdAt', 'updatedAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.desc is string
+        && request.resource.data.desc.size() <= 300
+        && request.resource.data.createdAt is number
+        && request.resource.data.updatedAt is number;
+    }
+
+    // Info profile — cuma dokumen "profile" yang boleh ada.
+    match /site/profile {
+      allow read: if true;
+      allow write: if isAdmin() && validProfile();
+    }
+
+    // Dokumen lain di bawah /site ditolak.
+    match /site/{otherDoc} {
+      allow read, write: if false;
+    }
+
+    // List teman — publik baca, admin tulis.
     match /friends/{friendId} {
       allow read: if true;
-      allow write: if true;
+      allow create, update: if isAdmin() && validFriend();
+      allow delete: if isAdmin();
+    }
+
+    // Default: tolak semua path lain.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

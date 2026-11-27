@@ -301,6 +301,15 @@ body {
   pointer-events: none;
 }
 
+/* Di layar sempit, rays digeser masuk supaya nggak bikin halaman
+   kelebaran (mobile Chrome jadi shrink-to-fit / halaman mengecil). */
+@media (max-width: 1123px) {
+  .hero::after {
+    top: -40px;
+    right: -16px;
+  }
+}
+
 .hero-sticker {
   position: absolute;
   top: -15px;
@@ -519,6 +528,79 @@ body {
 }
 
 /* ==========================================================
+   BIODATA
+   ========================================================== */
+
+.bio-section {
+  margin-top: 38px;
+}
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.bio-card {
+  padding: 12px 14px;
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  animation: pop-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.bio-card:hover {
+  transform: translate(-2px, -2px) rotate(-0.4deg);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.bio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.bio-label svg {
+  width: 13px;
+  height: 13px;
+}
+
+.bio-value {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.bio-card.is-empty .bio-value {
+  font-weight: 500;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.bio-wide {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 560px) {
+  .bio-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* ==========================================================
    FRIEND CARDS
    ========================================================== */
 
@@ -688,6 +770,22 @@ body {
 
 .sk-sm {
   height: 9px;
+}
+
+.sk-55 {
+  width: 55%;
+}
+
+.sk-38 {
+  width: 38%;
+}
+
+.sk-70 {
+  width: 70%;
+}
+
+.sk-meta {
+  flex: 1;
 }
 
 .sk-pill {
@@ -944,23 +1042,35 @@ body {
   height: 26px;
 }
 
-.auth-field {
-  margin: 20px 0 14px;
+.auth-grid {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
   text-align: left;
 }
 
+.auth-grid .field {
+  margin-bottom: 0;
+}
+
 .auth-input {
-  text-align: center;
-  letter-spacing: 0.2em;
-  padding: 12px;
+  letter-spacing: 0.08em;
+}
+
+.auth-note {
+  margin: 12px 0 0;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--muted);
 }
 
 .field-error {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   font-size: 11px;
   font-weight: 700;
   color: var(--accent);
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 /* admin */
@@ -987,6 +1097,61 @@ body {
 .admin-head-mark svg {
   width: 20px;
   height: 20px;
+}
+
+.admin-session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  background: #f7f4ea;
+  border: 2px dashed var(--ink);
+}
+
+.admin-session-meta {
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.admin-session-email {
+  font-weight: 800;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.admin-session-uid {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.admin-session-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.admin-warning {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border: 2px solid var(--accent);
+  background: #fff1f2;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: #7c0d16;
+  overflow-wrap: anywhere;
+}
+
+.admin-warning strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .admin-block {
@@ -1018,6 +1183,17 @@ body {
   flex: none;
 }
 
+.block-sub {
+  margin: 16px 0 10px;
+  padding-top: 12px;
+  border-top: 2px dashed rgba(18, 18, 18, 0.22);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 /* ==========================================================
    FORMS
    ========================================================== */
@@ -1034,6 +1210,10 @@ body {
 
 .form-grid .field {
   margin-bottom: 0;
+}
+
+.form-grid .field-wide {
+  grid-column: 1 / -1;
 }
 
 .field label {

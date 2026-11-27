@@ -4,8 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f4f0e4" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://www.gstatic.com https://unpkg.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://yogaweb-112b6.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
+    />
     <title>Yoga — Manga Site</title>
 
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,8 +30,8 @@
             <span class="brand-sub">Manga Edition</span>
           </span>
         </div>
-        <button type="button" class="btn btn-ink btn-sm" onclick="openAuthModal()">
-          <i data-lucide="shield-question"></i>
+        <button type="button" class="btn btn-ink btn-sm" data-action="open-auth">
+          <i data-lucide="shield-check"></i>
           <span>Lu Yoga Bukan?</span>
         </button>
       </div>
@@ -70,6 +75,15 @@
         </div>
       </section>
 
+      <!-- ================= BIODATA ================= -->
+      <section class="bio-section" aria-labelledby="bio-title">
+        <div class="section-head">
+          <h2 id="bio-title" class="section-title">Biodata</h2>
+          <span class="count-badge">Data Diri</span>
+        </div>
+        <div id="bio-grid" class="bio-grid"></div>
+      </section>
+
       <!-- ================= FRIENDS ================= -->
       <section class="friends-section" aria-labelledby="friends-title">
         <div class="section-head">
@@ -87,7 +101,7 @@
       <p>© 2026 Yoga — Manga Edition<span class="footer-dot"></span>Tinta &amp; Kopi</p>
     </footer>
 
-    <!-- ================= MODAL: PASSWORD ================= -->
+    <!-- ================= MODAL: LOGIN ADMIN ================= -->
     <div
       id="auth-modal"
       class="modal"
@@ -99,33 +113,59 @@
         <button
           type="button"
           class="modal-close"
-          onclick="closeAuthModal()"
+          data-action="close-auth"
           aria-label="Tutup"
         >
           <i data-lucide="x"></i>
         </button>
 
         <div class="auth-badge" aria-hidden="true">
-          <i data-lucide="key-round"></i>
+          <i data-lucide="lock-keyhole"></i>
         </div>
-        <h3 id="auth-title" class="modal-title">Konfirmasi Identity</h3>
-        <p class="modal-sub">Masukkan password buat masuk ke Data Manager.</p>
+        <h3 id="auth-title" class="modal-title">Login Admin</h3>
+        <p class="modal-sub">
+          Masuk pakai akun Firebase. Cuma UID admin yang bisa nulis data.
+        </p>
 
-        <div class="field auth-field">
-          <input
-            id="auth-password"
-            class="input auth-input"
-            type="password"
-            placeholder="Masukkan Password..."
-            autocomplete="current-password"
-          />
-          <p id="auth-error" class="field-error hidden">Password salah! Coba lagi.</p>
+        <div class="auth-grid">
+          <div class="field">
+            <label for="auth-email">Email</label>
+            <input
+              id="auth-email"
+              class="input"
+              type="email"
+              placeholder="admin@email.com"
+              autocomplete="username"
+              spellcheck="false"
+            />
+          </div>
+          <div class="field">
+            <label for="auth-password">Password</label>
+            <input
+              id="auth-password"
+              class="input auth-input"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+          </div>
         </div>
 
-        <button type="button" class="btn btn-primary btn-block" onclick="checkPassword()">
-          <i data-lucide="unlock"></i>
-          <span>Verifikasi</span>
+        <p id="auth-error" class="field-error hidden"></p>
+
+        <button
+          type="button"
+          id="login-btn"
+          class="btn btn-primary btn-block"
+          data-action="login-admin"
+        >
+          <i data-lucide="log-in"></i>
+          <span>Masuk</span>
         </button>
+
+        <p class="auth-note">
+          Nggak punya akses? Nggak perlu login — web tetap bisa dibaca semua orang.
+        </p>
       </div>
     </div>
 
@@ -141,7 +181,7 @@
         <button
           type="button"
           class="modal-close"
-          onclick="closeAdminModal()"
+          data-action="close-admin"
           aria-label="Tutup"
         >
           <i data-lucide="x"></i>
@@ -149,12 +189,30 @@
 
         <div class="admin-head">
           <span class="admin-head-mark" aria-hidden="true">
-            <i data-lucide="sliders-horizontal"></i>
+            <i data-lucide="shield-check"></i>
           </span>
           <div>
             <h3 id="admin-title" class="modal-title left">Data Control Panel</h3>
             <p class="modal-sub left">Update info profile &amp; list teman — langsung sync.</p>
           </div>
+        </div>
+
+        <div id="admin-session" class="admin-session hidden">
+          <div class="admin-session-meta">
+            <div id="admin-session-email" class="admin-session-email"></div>
+            <div class="admin-session-uid">UID: <span id="admin-session-uid"></span></div>
+          </div>
+          <div class="admin-session-actions">
+            <button type="button" class="row-btn" data-action="copy-uid">Copy UID</button>
+            <button type="button" class="row-btn danger" data-action="logout-admin">
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <div id="admin-setup-warning" class="admin-warning hidden">
+          <strong>Setup keamanan belum selesai</strong>
+          <span id="admin-setup-text"></span>
         </div>
 
         <!-- PROFILE -->
@@ -177,11 +235,62 @@
             <textarea id="edit-about" class="input" rows="3" maxlength="400"></textarea>
           </div>
 
+          <p class="block-sub">Biodata</p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="edit-birthday">Ulang Tahun</label>
+              <input
+                id="edit-birthday"
+                class="input"
+                type="text"
+                placeholder="12 Oktober 2007"
+                maxlength="40"
+              />
+            </div>
+            <div class="field">
+              <label for="edit-hobby">Hobby</label>
+              <input
+                id="edit-hobby"
+                class="input"
+                type="text"
+                placeholder="Ngoding, main game, nonton anime"
+                maxlength="80"
+              />
+            </div>
+            <div class="field">
+              <label for="edit-fav-song">Lagu Favorit</label>
+              <input id="edit-fav-song" class="input" type="text" maxlength="80" />
+            </div>
+            <div class="field">
+              <label for="edit-fav-movie">Film Favorit</label>
+              <input id="edit-fav-movie" class="input" type="text" maxlength="80" />
+            </div>
+            <div class="field">
+              <label for="edit-fav-series">Series Favorit</label>
+              <input id="edit-fav-series" class="input" type="text" maxlength="80" />
+            </div>
+            <div class="field">
+              <label for="edit-fav-food">Makanan Favorit</label>
+              <input id="edit-fav-food" class="input" type="text" maxlength="80" />
+            </div>
+            <div class="field field-wide">
+              <label for="edit-wishlist">Wishlist</label>
+              <textarea
+                id="edit-wishlist"
+                class="input"
+                rows="2"
+                placeholder="Satu item per baris, contoh: PC baru / Headset"
+                maxlength="300"
+              ></textarea>
+            </div>
+          </div>
+
           <button
             type="button"
             id="save-profile-btn"
             class="btn btn-primary btn-sm"
-            onclick="saveProfile()"
+            data-action="save-profile"
           >
             <i data-lucide="save"></i>
             <span>Simpan Profile</span>
@@ -197,27 +306,15 @@
 
           <input type="hidden" id="friend-id" />
 
-          <div class="form-grid">
-            <div class="field">
-              <label for="friend-name">Nama Teman</label>
-              <input
-                id="friend-name"
-                class="input"
-                type="text"
-                placeholder="Contoh: Abi"
-                maxlength="40"
-              />
-            </div>
-            <div class="field">
-              <label for="friend-roblox">Username Roblox (opsional)</label>
-              <input
-                id="friend-roblox"
-                class="input"
-                type="text"
-                placeholder="huLhFtwETSR"
-                maxlength="40"
-              />
-            </div>
+          <div class="field">
+            <label for="friend-name">Nama Teman</label>
+            <input
+              id="friend-name"
+              class="input"
+              type="text"
+              placeholder="Contoh: Abi"
+              maxlength="40"
+            />
           </div>
 
           <div class="field">
@@ -236,7 +333,7 @@
               type="button"
               id="save-friend-btn"
               class="btn btn-green btn-sm"
-              onclick="saveFriend()"
+              data-action="save-friend"
             >
               <i data-lucide="check"></i>
               <span>Simpan Teman</span>
@@ -245,11 +342,11 @@
               type="button"
               id="friend-cancel"
               class="btn btn-ghost btn-sm hidden"
-              onclick="resetFriendForm()"
+              data-action="reset-friend"
             >
               Batal Edit
             </button>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="resetFriendForm()">
+            <button type="button" class="btn btn-ghost btn-sm" data-action="reset-friend">
               Reset Form
             </button>
           </div>
@@ -265,11 +362,28 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- Firebase config dulu, lalu SDK, lalu logic -->
+    <!-- Firebase config dulu, lalu SDK (dikunci pakai SRI), lalu logic -->
     <script src="firebase-config.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-    <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"
+      integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"
+      integrity="sha384-NiuRnBs5Z0OgJ12kYJLSeWxANeJN369zH3+Zn0TGVPaCH/TKmbPFqfOmmLtrj+wg"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"
+      integrity="sha384-/SBCyt0JELVRyyrOp+QG5CdnpVoAry+uw9hdherLgyZxxePtHjOvQmJU5CHymUhT"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"
+      integrity="sha384-8nT3SpButyvenpAdKYPJzXdSz3zidMGduMoaMvwjKnAWVv238n6P1mhveiJJQWrV"
+      crossorigin="anonymous"
+    ></script>
     <script src="app.js"></script>
   </body>
 </html>
