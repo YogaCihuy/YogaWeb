@@ -1,623 +1,275 @@
 <!doctype html>
 <html lang="id">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Yoga - Personal Website</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              dark: "#0a0d14",
-              cardDark: "#131822",
-              accent: "#3b82f6",
-              accentGlow: "#1d4ed8"
-            }
-          }
-        }
-      };
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f0e4" />
+    <title>Yoga — Manga Site</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=M+PLUS+1p:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body
-    class="bg-dark text-slate-200 font-sans min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white"
-  >
-    <!-- NAVIGATION -->
-    <nav
-      class="sticky top-0 z-40 bg-dark/80 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 sm:px-8"
-    >
-      <div class="max-w-5xl mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <div
-            class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/30"
-          >
-            Y
-          </div>
-          <span class="font-bold text-lg tracking-wide text-white">
-            Yoga
-            <span class="text-blue-500">.dev</span>
+  <body>
+    <!-- ================= NAVIGATION ================= -->
+    <nav class="topbar">
+      <div class="wrap nav-inner">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">Y</span>
+          <span class="brand-copy">
+            <span class="brand-text">YOGA<span class="brand-dot">.DEV</span></span>
+            <span class="brand-sub">Manga Edition</span>
           </span>
         </div>
-
-        <button
-          onclick="openAuthModal()"
-          class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition-all duration-200 flex items-center space-x-2 shadow-lg shadow-blue-500/10"
-        >
-          <i data-lucide="shield-question" class="w-4 h-4"></i>
+        <button type="button" class="btn btn-ink btn-sm" onclick="openAuthModal()">
+          <i data-lucide="shield-question"></i>
           <span>Lu Yoga Bukan?</span>
         </button>
       </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-5xl mx-auto px-4 py-8 sm:px-8 flex-1 w-full space-y-12">
-      <!-- HERO / ABOUT SECTION -->
-      <section
-        class="bg-cardDark/60 border border-slate-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm relative overflow-hidden"
-      >
-        <div
-          class="absolute -right-10 -bottom-10 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"
-        ></div>
+    <div id="mode-banner" class="mode-banner" role="status"></div>
 
-        <div
-          class="flex flex-col md:flex-row items-center md:items-start gap-6"
-        >
-          <!-- Avatar Replacement (No Photo) -->
-          <div
-            class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-blue-500/30 flex items-center justify-center shrink-0 shadow-xl relative"
-          >
-            <span
-              class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-blue-400 to-indigo-400"
-            >
-              YOGA
-            </span>
-            <div
-              class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-dark"
-              title="Online"
-            ></div>
+    <main class="wrap main">
+      <!-- ================= HERO ================= -->
+      <section class="hero panel">
+        <span class="hero-sticker" aria-hidden="true">Vol. 01</span>
+        <span class="sfx" aria-hidden="true">ドン!</span>
+
+        <div class="hero-inner">
+          <div class="avatar" aria-hidden="true">
+            <span id="avatar-initials">YO</span>
+            <span class="online-dot" title="Online"></span>
           </div>
 
-          <div class="flex-1 text-center md:text-left space-y-3">
-            <div
-              class="flex flex-wrap items-center justify-center md:justify-start gap-2"
-            >
-              <h1
-                id="display-name"
-                class="text-2xl sm:text-3xl font-bold text-white tracking-wide"
-              >
-                Yoga
+          <div class="hero-info">
+            <div class="hero-name-row">
+              <h1 id="display-name" class="hero-name">
+                <span class="skeleton sk-name"></span>
               </h1>
-              <span
-                id="display-role"
-                class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"
-              >
-                Developer & Gamer
+              <span id="display-role" class="role-badge">
+                <span class="skeleton sk-pill"></span>
               </span>
             </div>
 
-            <p
-              id="display-about"
-              class="text-slate-400 text-sm sm:text-base leading-relaxed"
-            >
-              Halo! Gw Yoga. Gw suka ngoding (Web & Game Dev Roblox), main game,
-              dan nonton anime.
+            <p id="display-about" class="hero-about">
+              <span class="skeleton sk-line"></span>
+              <span class="skeleton sk-line sk-80"></span>
             </p>
 
-            <div
-              class="flex flex-wrap justify-center md:justify-start gap-2 pt-2"
-            >
-              <span
-                class="px-3 py-1 bg-slate-800/80 text-slate-300 text-xs rounded-md border border-slate-700/50 flex items-center gap-1.5"
-              >
-                <i data-lucide="code-2" class="w-3.5 h-3.5 text-blue-400"></i>
-                Roblox Luau & Web
-              </span>
-              <span
-                class="px-3 py-1 bg-slate-800/80 text-slate-300 text-xs rounded-md border border-slate-700/50 flex items-center gap-1.5"
-              >
-                <i
-                  data-lucide="gamepad-2"
-                  class="w-3.5 h-3.5 text-blue-400"
-                ></i>
-                Gamer
-              </span>
-              <span
-                class="px-3 py-1 bg-slate-800/80 text-slate-300 text-xs rounded-md border border-slate-700/50 flex items-center gap-1.5"
-              >
-                <i data-lucide="tv" class="w-3.5 h-3.5 text-blue-400"></i>
-                Anime Lover
-              </span>
+            <div class="chips">
+              <span class="chip"><i data-lucide="code-2"></i>Roblox Luau &amp; Web</span>
+              <span class="chip"><i data-lucide="gamepad-2"></i>Gamer</span>
+              <span class="chip"><i data-lucide="tv"></i>Anime Lover</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- FRIENDS SECTION -->
-      <section class="space-y-6">
-        <div
-          class="flex items-center justify-between border-b border-slate-800/80 pb-3"
-        >
-          <div class="flex items-center space-x-2">
-            <i data-lucide="users" class="w-5 h-5 text-blue-500"></i>
-            <h2 class="text-xl font-bold text-white">List Pertemanan</h2>
-          </div>
-          <span
-            id="friend-count"
-            class="text-xs text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full"
-          >
-            0 Teman
+      <!-- ================= FRIENDS ================= -->
+      <section class="friends-section" aria-labelledby="friends-title">
+        <div class="section-head">
+          <h2 id="friends-title" class="section-title">List Pertemanan</h2>
+          <span id="friend-count" class="count-badge">
+            <span class="skeleton sk-pill"></span>
           </span>
         </div>
 
-        <!-- FRIENDS GRID -->
-        <div id="friends-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Rendered dynamically via JS -->
-        </div>
+        <div id="friends-grid" class="friends-grid" aria-live="polite"></div>
       </section>
     </main>
 
-    <!-- FOOTER -->
-    <footer
-      class="border-t border-slate-800/60 py-6 text-center text-xs text-slate-500"
-    >
-      <p>© Yoga. Personal Website.</p>
+    <footer class="site-footer">
+      <p>© 2026 Yoga — Manga Edition<span class="footer-dot"></span>Tinta &amp; Kopi</p>
     </footer>
 
-    <!-- MODAL AUTH (PASSSWORD) -->
+    <!-- ================= MODAL: PASSWORD ================= -->
     <div
       id="auth-modal"
-      class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="auth-title"
     >
-      <div
-        class="bg-cardDark border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative"
-      >
+      <div class="modal-card auth-card">
         <button
+          type="button"
+          class="modal-close"
           onclick="closeAuthModal()"
-          class="absolute top-4 right-4 text-slate-400 hover:text-white"
+          aria-label="Tutup"
         >
-          <i data-lucide="x" class="w-5 h-5"></i>
+          <i data-lucide="x"></i>
         </button>
 
-        <div class="text-center space-y-3 mb-6">
-          <div
-            class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto border border-blue-500/30"
-          >
-            <i data-lucide="key-round" class="w-6 h-6"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white">Konfirmasi Identity</h3>
-          <p class="text-xs text-slate-400">
-            Masukkan password buat masuk ke Data Manager.
-          </p>
+        <div class="auth-badge" aria-hidden="true">
+          <i data-lucide="key-round"></i>
+        </div>
+        <h3 id="auth-title" class="modal-title">Konfirmasi Identity</h3>
+        <p class="modal-sub">Masukkan password buat masuk ke Data Manager.</p>
+
+        <div class="field auth-field">
+          <input
+            id="auth-password"
+            class="input auth-input"
+            type="password"
+            placeholder="Masukkan Password..."
+            autocomplete="current-password"
+          />
+          <p id="auth-error" class="field-error hidden">Password salah! Coba lagi.</p>
         </div>
 
-        <div class="space-y-4">
-          <div>
-            <input
-              type="password"
-              id="auth-password"
-              placeholder="Masukkan Password..."
-              class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors text-center tracking-widest"
-            />
-            <p
-              id="auth-error"
-              class="text-xs text-red-400 mt-2 text-center hidden"
-            >
-              Password salah! Coba lagi.
-            </p>
-          </div>
-          <button
-            onclick="checkPassword()"
-            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors shadow-lg shadow-blue-600/20"
-          >
-            Verifikasi
-          </button>
-        </div>
+        <button type="button" class="btn btn-primary btn-block" onclick="checkPassword()">
+          <i data-lucide="unlock"></i>
+          <span>Verifikasi</span>
+        </button>
       </div>
     </div>
 
-    <!-- MODAL ADMIN PANEL -->
+    <!-- ================= MODAL: ADMIN ================= -->
     <div
       id="admin-modal"
-      class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-title"
     >
-      <div
-        class="bg-cardDark border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto"
-      >
-        <div
-          class="flex justify-between items-center border-b border-slate-800 pb-4"
+      <div class="modal-card admin-card">
+        <button
+          type="button"
+          class="modal-close"
+          onclick="closeAdminModal()"
+          aria-label="Tutup"
         >
-          <div class="flex items-center space-x-2">
-            <i data-lucide="sliders" class="w-5 h-5 text-blue-500"></i>
-            <h3 class="text-lg font-bold text-white">
-              Yoga Data Control Panel
-            </h3>
+          <i data-lucide="x"></i>
+        </button>
+
+        <div class="admin-head">
+          <span class="admin-head-mark" aria-hidden="true">
+            <i data-lucide="sliders-horizontal"></i>
+          </span>
+          <div>
+            <h3 id="admin-title" class="modal-title left">Data Control Panel</h3>
+            <p class="modal-sub left">Update info profile &amp; list teman — langsung sync.</p>
           </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="admin-block">
+          <h4 class="block-title"><span class="bar"></span>Edit Profile Info</h4>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="edit-name">Nama</label>
+              <input id="edit-name" class="input" type="text" maxlength="40" />
+            </div>
+            <div class="field">
+              <label for="edit-role">Role / Status Singkat</label>
+              <input id="edit-role" class="input" type="text" maxlength="60" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="edit-about">About Me</label>
+            <textarea id="edit-about" class="input" rows="3" maxlength="400"></textarea>
+          </div>
+
           <button
-            onclick="closeAdminModal()"
-            class="text-slate-400 hover:text-white"
+            type="button"
+            id="save-profile-btn"
+            class="btn btn-primary btn-sm"
+            onclick="saveProfile()"
           >
-            <i data-lucide="x" class="w-5 h-5"></i>
+            <i data-lucide="save"></i>
+            <span>Simpan Profile</span>
           </button>
         </div>
 
-        <!-- EDIT ABOUT ME -->
-        <div
-          class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800"
-        >
-          <h4
-            class="text-sm font-semibold text-blue-400 flex items-center gap-2"
-          >
-            <i data-lucide="user-cog" class="w-4 h-4"></i>
-            Edit Profile Info
+        <!-- FRIEND FORM -->
+        <div class="admin-block">
+          <h4 class="block-title">
+            <span class="bar"></span>
+            <span id="friend-form-mode">Tambah Teman Baru</span>
           </h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="text-xs text-slate-400">Nama</label>
+
+          <input type="hidden" id="friend-id" />
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="friend-name">Nama Teman</label>
               <input
+                id="friend-name"
+                class="input"
                 type="text"
-                id="edit-name"
-                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                placeholder="Contoh: Abi"
+                maxlength="40"
               />
             </div>
-            <div>
-              <label class="text-xs text-slate-400">
-                Role / Status Singkat
-              </label>
+            <div class="field">
+              <label for="friend-roblox">Username Roblox (opsional)</label>
               <input
+                id="friend-roblox"
+                class="input"
                 type="text"
-                id="edit-role"
-                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                placeholder="huLhFtwETSR"
+                maxlength="40"
               />
             </div>
           </div>
-          <div>
-            <label class="text-xs text-slate-400">About Me Description</label>
+
+          <div class="field">
+            <label for="friend-desc">Pendapat Lu Tentang Dia</label>
             <textarea
-              id="edit-about"
-              rows="3"
-              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+              id="friend-desc"
+              class="input"
+              rows="2"
+              placeholder="Menurut gw dia orangnya..."
+              maxlength="240"
             ></textarea>
           </div>
-          <button
-            onclick="saveProfile()"
-            class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-          >
-            Simpan Profile
-          </button>
+
+          <div class="btn-row">
+            <button
+              type="button"
+              id="save-friend-btn"
+              class="btn btn-green btn-sm"
+              onclick="saveFriend()"
+            >
+              <i data-lucide="check"></i>
+              <span>Simpan Teman</span>
+            </button>
+            <button
+              type="button"
+              id="friend-cancel"
+              class="btn btn-ghost btn-sm hidden"
+              onclick="resetFriendForm()"
+            >
+              Batal Edit
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="resetFriendForm()">
+              Reset Form
+            </button>
+          </div>
         </div>
 
-        <!-- MANAGE FRIENDS -->
-        <div class="space-y-4">
-          <h4
-            class="text-sm font-semibold text-blue-400 flex items-center gap-2"
-          >
-            <i data-lucide="user-plus" class="w-4 h-4"></i>
-            Tambah / Edit Teman
-          </h4>
-
-          <!-- FORM TEMAN -->
-          <div
-            class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3"
-          >
-            <input type="hidden" id="friend-id" />
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="text-xs text-slate-400">Nama Teman</label>
-                <input
-                  type="text"
-                  id="friend-name"
-                  placeholder="Contoh: Abi"
-                  class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label class="text-xs text-slate-400">
-                  Username Roblox (Opsional)
-                </label>
-                <input
-                  type="text"
-                  id="friend-roblox"
-                  placeholder="huLhFtwETSR"
-                  class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="text-xs text-slate-400">
-                Pendapat Lu Tentang Dia (Deskripsi)
-              </label>
-              <textarea
-                id="friend-desc"
-                rows="2"
-                placeholder="Menurut gw dia orangnya..."
-                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
-              ></textarea>
-            </div>
-            <div class="flex gap-2">
-              <button
-                onclick="saveFriend()"
-                class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1"
-              >
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                Simpan Teman
-              </button>
-              <button
-                onclick="resetFriendForm()"
-                class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
-              >
-                Reset Form
-              </button>
-            </div>
-          </div>
-
-          <!-- LIST TEMAN DI ADMIN (FOR DELETE/EDIT) -->
-          <div class="space-y-2">
-            <label class="text-xs text-slate-400">Daftar Teman Saat Ini:</label>
-            <div
-              id="admin-friends-list"
-              class="space-y-2 max-h-48 overflow-y-auto pr-1"
-            >
-              <!-- Rendered by JS -->
-            </div>
-          </div>
+        <!-- FRIEND LIST -->
+        <div class="admin-block">
+          <h4 class="block-title"><span class="bar"></span>Daftar Teman Saat Ini</h4>
+          <div id="admin-friends-list" class="scroll-area admin-list"></div>
         </div>
       </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-      // Initial Data Default (Jikalau LocalStorage masih kosong)
-      const defaultProfile = {
-        name: "Yoga",
-        role: "Developer & Gamer",
-        about:
-          "Halo! Gw Yoga. Gw suka ngoding (Web & Game Dev Roblox), main game, dan nonton anime."
-      };
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-      const defaultFriends = [
-        {
-          id: "1",
-          name: "Abi",
-          roblox: "huLhFtwETSR",
-          desc: "Temen baik bgt (BestFriend Forever). Sering mabar & seru diajak ngobrol."
-        },
-        {
-          id: "2",
-          name: "Zhafran",
-          roblox: "anjay_alok384",
-          desc: "Temen mabar yang asik, solid parah kalo udah main bareng."
-        },
-        {
-          id: "3",
-          name: "Keyvan",
-          roblox: "",
-          desc: "Temen dari kelas 1 SD. Udah deket banget kayak Abi."
-        },
-        {
-          id: "4",
-          name: "Nats",
-          roblox: "",
-          desc: "Pacar gw (Natasya). Orang yang spesial buat gw."
-        },
-        {
-          id: "5",
-          name: "Zara",
-          roblox: "",
-          desc: "Temen yang kenal pas bulan Oktober. Pacarnya si Abi."
-        }
-      ];
-
-      // Load or Init LocalStorage
-      function getProfile() {
-        const data = localStorage.getItem("yoga_profile");
-        return data ? JSON.parse(data) : defaultProfile;
-      }
-
-      function getFriends() {
-        const data = localStorage.getItem("yoga_friends");
-        return data ? JSON.parse(data) : defaultFriends;
-      }
-
-      function saveProfileToStorage(profile) {
-        localStorage.setItem("yoga_profile", JSON.stringify(profile));
-      }
-
-      function saveFriendsToStorage(friends) {
-        localStorage.setItem("yoga_friends", JSON.stringify(friends));
-      }
-
-      // Render UI
-      function renderUI() {
-        const profile = getProfile();
-        const friends = getFriends();
-
-        // Profile
-        document.getElementById("display-name").innerText = profile.name;
-        document.getElementById("display-role").innerText = profile.role;
-        document.getElementById("display-about").innerText = profile.about;
-
-        // Friends Grid
-        const grid = document.getElementById("friends-grid");
-        grid.innerHTML = "";
-
-        document.getElementById("friend-count").innerText =
-          `${friends.length} Teman`;
-
-        friends.forEach((f) => {
-          const card = document.createElement("div");
-          card.className =
-            "bg-cardDark/80 border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-blue-500/40 transition-all duration-200 group";
-
-          card.innerHTML = `
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-bold text-blue-400 text-sm shrink-0">
-                                ${f.name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div class="overflow-hidden">
-                                <h3 class="font-bold text-white text-base leading-tight">${f.name}</h3>
-                                ${f.roblox ? `<span class="text-[11px] text-blue-400 font-mono flex items-center gap-1"><i data-lucide="gamepad" class="w-3 h-3"></i> @${f.roblox}</span>` : '<span class="text-[11px] text-slate-500">Friend</span>'}
-                            </div>
-                        </div>
-                        <div class="bg-slate-900/60 rounded-lg p-3 border border-slate-800/60">
-                            <p class="text-xs text-slate-300 leading-relaxed italic">"${f.desc || "Belum ada pendapat."}"</p>
-                        </div>
-                    </div>
-                `;
-          grid.appendChild(card);
-        });
-
-        // Admin Friends List
-        const adminList = document.getElementById("admin-friends-list");
-        adminList.innerHTML = "";
-
-        friends.forEach((f) => {
-          const item = document.createElement("div");
-          item.className =
-            "flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-slate-800 text-xs";
-          item.innerHTML = `
-                    <div class="truncate mr-2">
-                        <span class="font-bold text-white">${f.name}</span>
-                        ${f.roblox ? `<span class="text-slate-500 ml-1">(@${f.roblox})</span>` : ""}
-                    </div>
-                    <div class="flex items-center space-x-1 shrink-0">
-                        <button onclick="editFriend('${f.id}')" class="px-2 py-1 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600 hover:text-white transition-colors">Edit</button>
-                        <button onclick="deleteFriend('${f.id}')" class="px-2 py-1 bg-red-600/20 text-red-400 rounded hover:bg-red-600 hover:text-white transition-colors">Hapus</button>
-                    </div>
-                `;
-          adminList.appendChild(item);
-        });
-
-        lucide.createIcons();
-      }
-
-      // Auth Logic
-      function openAuthModal() {
-        document.getElementById("auth-modal").classList.remove("hidden");
-        document.getElementById("auth-password").value = "";
-        document.getElementById("auth-error").classList.add("hidden");
-      }
-
-      function closeAuthModal() {
-        document.getElementById("auth-modal").classList.add("hidden");
-      }
-
-      function checkPassword() {
-        const pass = document.getElementById("auth-password").value;
-        if (pass === "19 10 13") {
-          closeAuthModal();
-          openAdminModal();
-        } else {
-          document.getElementById("auth-error").classList.remove("hidden");
-        }
-      }
-
-      // Admin Modal Logic
-      function openAdminModal() {
-        const profile = getProfile();
-        document.getElementById("edit-name").value = profile.name;
-        document.getElementById("edit-role").value = profile.role;
-        document.getElementById("edit-about").value = profile.about;
-
-        resetFriendForm();
-        document.getElementById("admin-modal").classList.remove("hidden");
-      }
-
-      function closeAdminModal() {
-        document.getElementById("admin-modal").classList.add("hidden");
-      }
-
-      // Profile Functions
-      function saveProfile() {
-        const updated = {
-          name: document.getElementById("edit-name").value || "Yoga",
-          role: document.getElementById("edit-role").value || "Developer",
-          about: document.getElementById("edit-about").value || ""
-        };
-        saveProfileToStorage(updated);
-        renderUI();
-        alert("Profile berhasil diperbarui!");
-      }
-
-      // Friend Functions (CRUD + DELETE WORKING 100%)
-      function saveFriend() {
-        const id = document.getElementById("friend-id").value;
-        const name = document.getElementById("friend-name").value.trim();
-        const roblox = document.getElementById("friend-roblox").value.trim();
-        const desc = document.getElementById("friend-desc").value.trim();
-
-        if (!name) {
-          alert("Nama teman wajib diisi!");
-          return;
-        }
-
-        let friends = getFriends();
-
-        if (id) {
-          // Update
-          friends = friends.map((f) =>
-            f.id === id ? { id, name, roblox, desc } : f
-          );
-        } else {
-          // Add
-          const newFriend = {
-            id: Date.now().toString(),
-            name,
-            roblox,
-            desc
-          };
-          friends.push(newFriend);
-        }
-
-        saveFriendsToStorage(friends);
-        resetFriendForm();
-        renderUI();
-      }
-
-      function editFriend(id) {
-        const friends = getFriends();
-        const target = friends.find((f) => f.id === id);
-        if (target) {
-          document.getElementById("friend-id").value = target.id;
-          document.getElementById("friend-name").value = target.name;
-          document.getElementById("friend-roblox").value = target.roblox || "";
-          document.getElementById("friend-desc").value = target.desc || "";
-        }
-      }
-
-      // FUNCTION HAPUS TEMAN (PASTI BISA & BERHASIL)
-      function deleteFriend(id) {
-        if (confirm("Yakin mau hapus teman ini dari list?")) {
-          let friends = getFriends();
-          friends = friends.filter((f) => f.id !== id);
-          saveFriendsToStorage(friends);
-          renderUI();
-        }
-      }
-
-      function resetFriendForm() {
-        document.getElementById("friend-id").value = "";
-        document.getElementById("friend-name").value = "";
-        document.getElementById("friend-roblox").value = "";
-        document.getElementById("friend-desc").value = "";
-      }
-
-      // Enter key for password
-      document
-        .getElementById("auth-password")
-        .addEventListener("keyup", function (e) {
-          if (e.key === "Enter") checkPassword();
-        });
-
-      // Initialize App
-      window.onload = function () {
-        renderUI();
-      };
-    </script>
+    <!-- Firebase config dulu, lalu SDK, lalu logic -->
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

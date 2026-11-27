@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// Rules ini buat personal site: semua orang bisa baca,
+// semua orang bisa tulis (karena gate admin masih password di sisi client).
+//
+// Kalau nanti mau lebih aman: tambahin Firebase Auth (email/password atau
+// anonymous + custom claim), terus ganti "if true" jadi "if request.auth != null".
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Info profile (nama, role, about)
+    match /site/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // List teman
+    match /friends/{friendId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
