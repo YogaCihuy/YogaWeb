@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f0e4" />
+    <meta name="theme-color" content="#f1f1ef" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' https://www.gstatic.com https://unpkg.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; frame-src https://yogaweb-112b6.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests"
@@ -17,7 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=Bangers&family=M+PLUS+1p:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=mono2" />
   </head>
   <body>
     <!-- ================= NAVIGATION ================= -->
@@ -351,7 +351,7 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <!-- Firebase config dulu, lalu SDK (dikunci pakai SRI), lalu logic -->
-    <script src="firebase-config.js"></script>
+    <script src="firebase-config.js?v=mono2"></script>
     <script
       src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"
       integrity="sha384-mLD+wdwynYnAhgHAkdPP5hroWJXJTNy5C2OhPKM55zuiV2vjzFD1LtBohaHq2Ex8"
@@ -372,6 +372,6 @@
       integrity="sha384-8nT3SpButyvenpAdKYPJzXdSz3zidMGduMoaMvwjKnAWVv238n6P1mhveiJJQWrV"
       crossorigin="anonymous"
     ></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=mono2"></script>
   </body>
 </html>

@@ -3,14 +3,15 @@
    ========================================================== */
 
 :root {
-  --paper: #f4f0e4;
-  --paper-2: #fffdf6;
-  --ink: #121212;
-  --ink-2: #33322d;
-  --muted: #726e61;
-  --accent: #e0202f;
-  --accent-2: #b31220;
-  --green: #178a45;
+  --paper: #f1f1ef;
+  --paper-2: #ffffff;
+  --ink: #101010;
+  --ink-2: #2e2e2e;
+  --muted: #6a6a6a;
+  --accent: #101010;
+  --accent-2: #000000;
+  --pop: #a8a8a8;
+  --green: #232323;
   --line: 3px solid var(--ink);
   --shadow-sm: 3px 3px 0 var(--ink);
   --shadow-md: 5px 5px 0 var(--ink);
@@ -69,7 +70,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(244, 240, 228, 0.95);
+  background: rgba(241, 241, 239, 0.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: var(--line);
@@ -103,7 +104,7 @@ body {
   font-family: "Bangers", "Arial Black", Impact, sans-serif;
   font-size: 26px;
   line-height: 1;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
   transform: rotate(-3deg);
   transition: transform 0.18s ease;
 }
@@ -199,11 +200,11 @@ body {
 .btn-ink {
   background: var(--ink);
   color: #fff;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
 }
 
 .btn-ink:hover {
-  box-shadow: 4px 4px 0 var(--accent);
+  box-shadow: 4px 4px 0 var(--pop);
 }
 
 .btn-primary {
@@ -322,7 +323,7 @@ body {
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
   transform: rotate(-3deg);
 }
 
@@ -337,7 +338,7 @@ body {
   line-height: 1;
   letter-spacing: 0.04em;
   color: transparent;
-  -webkit-text-stroke: 2px rgba(224, 32, 47, 0.4);
+  -webkit-text-stroke: 2px rgba(16, 16, 16, 0.35);
   transform: rotate(-8deg);
   pointer-events: none;
   user-select: none;
@@ -366,7 +367,7 @@ body {
   font-size: 38px;
   letter-spacing: 0.05em;
   border: var(--line);
-  box-shadow: 5px 5px 0 var(--accent);
+  box-shadow: 5px 5px 0 var(--pop);
   transform: rotate(-2deg);
 }
 
@@ -377,7 +378,7 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #22c55e;
+  background: #fff;
   border: 3px solid var(--ink);
   box-shadow: 2px 2px 0 rgba(18, 18, 18, 0.35);
 }
@@ -413,16 +414,47 @@ body {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  box-shadow: 2px 2px 0 var(--accent);
+  box-shadow: 2px 2px 0 var(--pop);
   transform: rotate(-1.5deg);
 }
 
+/* Balon ucapan ala manga */
 .hero-about {
-  margin: 12px 0 16px;
-  max-width: 62ch;
+  position: relative;
+  margin: 14px 0 18px;
+  padding: 11px 15px;
+  max-width: 56ch;
   font-size: 14.5px;
   line-height: 1.7;
   color: var(--ink-2);
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 3px 3px 0 rgba(18, 18, 18, 0.22);
+}
+
+.hero-about::before,
+.hero-about::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: solid transparent;
+  pointer-events: none;
+}
+
+.hero-about::before {
+  top: 24px;
+  left: -15px;
+  border-width: 8px 13px 8px 0;
+  border-right-color: var(--ink);
+}
+
+.hero-about::after {
+  top: 26px;
+  left: -9px;
+  border-width: 6px 10px 6px 0;
+  border-right-color: #fff;
 }
 
 .friend-quote,
@@ -517,14 +549,14 @@ body {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
   white-space: nowrap;
 }
 
 .count-badge .skeleton {
   width: 52px;
   height: 10px;
-  background: #45453e;
+  background: #3a3a3a;
 }
 
 /* ==========================================================
@@ -661,7 +693,7 @@ body {
   font-family: "Bangers", Impact, sans-serif;
   font-size: 20px;
   letter-spacing: 0.04em;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
   transform: rotate(-2deg);
 }
 
@@ -704,26 +736,41 @@ body {
 
 .friend-quote {
   position: relative;
-  margin: 14px 0 0;
-  padding: 10px 12px 10px 30px;
-  background: #f0ecdf;
-  border: 2px solid var(--ink);
+  margin: 18px 0 0;
+  padding: 10px 13px;
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 2px 2px 0 rgba(18, 18, 18, 0.2);
   font-size: 13px;
   line-height: 1.6;
   font-style: italic;
   color: var(--ink-2);
 }
 
-.friend-quote::before {
-  content: "\201C";
+/* Ekor balon ucapan mengarah ke inisial teman */
+.friend-quote::before,
+.friend-quote::after {
+  content: "";
   position: absolute;
-  left: 9px;
-  top: 1px;
-  font-family: "M PLUS 1p", Georgia, serif;
-  font-size: 26px;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--accent);
+  width: 0;
+  height: 0;
+  border: solid transparent;
+  pointer-events: none;
+}
+
+.friend-quote::before {
+  top: -15px;
+  left: 20px;
+  border-width: 0 8px 13px 8px;
+  border-bottom-color: var(--ink);
+}
+
+.friend-quote::after {
+  top: -9px;
+  left: 22px;
+  border-width: 0 6px 10px 6px;
+  border-bottom-color: #fff;
 }
 
 /* ==========================================================
@@ -734,7 +781,7 @@ body {
   display: block;
   position: relative;
   overflow: hidden;
-  background: #e3ded0;
+  background: #e9e9e7;
   border-radius: 2px;
 }
 
@@ -797,7 +844,7 @@ body {
 .role-badge .skeleton {
   width: 74px;
   height: 9px;
-  background: #45453e;
+  background: #3a3a3a;
 }
 
 .role-badge .skeleton::after,
@@ -861,7 +908,7 @@ body {
   line-height: 0.85;
   color: var(--paper-2);
   -webkit-text-stroke: 3px var(--ink);
-  text-shadow: 5px 5px 0 var(--accent);
+  text-shadow: 5px 5px 0 var(--pop);
 }
 
 .empty-kicker {
@@ -1033,7 +1080,7 @@ body {
   place-items: center;
   background: var(--ink);
   color: #fff;
-  box-shadow: 4px 4px 0 var(--accent);
+  box-shadow: 4px 4px 0 var(--pop);
   transform: rotate(-3deg);
 }
 
@@ -1095,7 +1142,7 @@ body {
   place-items: center;
   background: var(--ink);
   color: #fff;
-  box-shadow: 3px 3px 0 var(--accent);
+  box-shadow: 3px 3px 0 var(--pop);
 }
 
 .admin-head-mark svg {
@@ -1142,11 +1189,11 @@ body {
 .admin-warning {
   margin-bottom: 14px;
   padding: 10px 12px;
-  border: 2px solid var(--accent);
-  background: #fff1f2;
+  border: 2px solid var(--ink);
+  background: #efefed;
   font-size: 11.5px;
   line-height: 1.65;
-  color: #7c0d16;
+  color: var(--ink);
   overflow-wrap: anywhere;
 }
 
@@ -1243,7 +1290,7 @@ body {
 }
 
 .input::placeholder {
-  color: #a19c8f;
+  color: #9b9b9b;
 }
 
 .input:focus {
@@ -1276,7 +1323,7 @@ textarea.input {
 }
 
 .scroll-area::-webkit-scrollbar-track {
-  background: #eee;
+  background: #e8e8e6;
 }
 
 .admin-row {
@@ -1374,7 +1421,7 @@ textarea.input {
   background: var(--ink);
   color: #fff;
   border: 2px solid #fff;
-  border-left: 8px solid var(--accent);
+  border-left: 8px solid var(--pop);
   box-shadow: 5px 5px 0 rgba(18, 18, 18, 0.4);
   font-size: 13px;
   font-weight: 700;
@@ -1393,8 +1440,12 @@ textarea.input {
 }
 
 .toast.is-error {
-  background: var(--accent);
-  border-left-color: var(--ink);
+  background: repeating-linear-gradient(
+    45deg,
+    #101010 0 10px,
+    #2b2b2b 10px 20px
+  );
+  border-left-color: #fff;
 }
 
 .mode-banner {
@@ -1405,12 +1456,12 @@ textarea.input {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7c0d16;
+  color: var(--ink);
   border-bottom: var(--line);
   background: repeating-linear-gradient(
     45deg,
-    #ffd9dc 0 8px,
-    #ffe9eb 8px 16px
+    #e4e4e2 0 8px,
+    #f2f2f0 8px 16px
   );
 }
 
@@ -1507,6 +1558,25 @@ textarea.input {
 
   .hero-about {
     margin: 10px auto 14px;
+    text-align: left;
+  }
+
+  .hero-about::before {
+    top: -15px;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 0 8px 13px 8px;
+    border-right-color: transparent;
+    border-bottom-color: var(--ink);
+  }
+
+  .hero-about::after {
+    top: -9px;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 0 6px 10px 6px;
+    border-right-color: transparent;
+    border-bottom-color: #fff;
   }
 
   .chips {
